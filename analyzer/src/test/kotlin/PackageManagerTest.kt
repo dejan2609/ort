@@ -86,7 +86,7 @@ class PackageManagerTest : WordSpec({
                 manager.managerName
             }
 
-            managedFilesByName["Gradle"].orEmpty() should haveSize(10)
+            managedFilesByName["Gradle"].orEmpty() should haveSize(11)
             managedFilesByName["PIP"] should containExactly(projectDir.resolve("setup.py"))
             managedFilesByName["SBT"] should containExactly(projectDir.resolve("build.sbt"))
         }
