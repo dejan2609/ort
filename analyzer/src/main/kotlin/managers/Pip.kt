@@ -553,7 +553,7 @@ class Pip(
                 id = Identifier(
                     type = "PyPI",
                     namespace = "",
-                    name = dependency["package_name"].textValue(),
+                    name = dependency["package_name"].textValue().normalizePackageName(),
                     version = dependency["installed_version"].textValue()
                 ),
                 authors = sortedSetOf(),
@@ -706,7 +706,7 @@ class Pip(
             id = Identifier(
                 type = "PyPI",
                 namespace = "",
-                name = map.getValue("Name").single(),
+                name = map.getValue("Name").single().normalizePackageName(),
                 version = map.getValue("Version").single()
             ),
             description = map["Summary"]?.single().orEmpty(),
@@ -737,3 +737,9 @@ private fun Package.enrichWith(other: Package?): Package =
     } else {
         this
     }
+
+// Normalize all PyPI package names to be lowercase and hyphenated as per PEP 426:
+// "All comparisons of distribution names MUST be case insensitive,
+// and MUST consider hyphens and underscores to be equivalent".
+// https://www.python.org/dev/peps/pep-0426/#name  
+private fun String.normalizePackageName(): String = toLowerCase().replace('_', '-').replace('.', '-')

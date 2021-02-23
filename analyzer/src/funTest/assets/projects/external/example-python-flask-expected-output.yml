@@ -18,18 +18,18 @@ project:
   scopes:
   - name: "install"
     dependencies:
-    - id: "PyPI::Flask:0.12"
+    - id: "PyPI::flask:0.12"
       dependencies:
-      - id: "PyPI::Jinja2:2.8.1"
+      - id: "PyPI::jinja2:2.8.1"
         dependencies:
-        - id: "PyPI::MarkupSafe:1.1.1"
-      - id: "PyPI::Werkzeug:1.0.1"
+        - id: "PyPI::markupsafe:1.1.1"
+      - id: "PyPI::werkzeug:1.0.1"
       - id: "PyPI::click:7.1.2"
       - id: "PyPI::itsdangerous:1.1.0"
     - id: "PyPI::gunicorn:19.6.0"
 packages:
-- id: "PyPI::Flask:0.12"
-  purl: "pkg:pypi/Flask@0.12"
+- id: "PyPI::flask:0.12"
+  purl: "pkg:pypi/flask@0.12"
   declared_licenses:
   - "BSD"
   - "BSD License"
@@ -60,8 +60,8 @@ packages:
     url: "https://github.com/pallets/flask.git"
     revision: ""
     path: ""
-- id: "PyPI::Jinja2:2.8.1"
-  purl: "pkg:pypi/Jinja2@2.8.1"
+- id: "PyPI::jinja2:2.8.1"
+  purl: "pkg:pypi/jinja2@2.8.1"
   declared_licenses:
   - "BSD"
   - "BSD License"
@@ -93,8 +93,8 @@ packages:
     url: ""
     revision: ""
     path: ""
-- id: "PyPI::MarkupSafe:1.1.1"
-  purl: "pkg:pypi/MarkupSafe@1.1.1"
+- id: "PyPI::markupsafe:1.1.1"
+  purl: "pkg:pypi/markupsafe@1.1.1"
   declared_licenses:
   - "BSD License"
   - "BSD-3-Clause"
@@ -124,8 +124,8 @@ packages:
     url: ""
     revision: ""
     path: ""
-- id: "PyPI::Werkzeug:1.0.1"
-  purl: "pkg:pypi/Werkzeug@1.0.1"
+- id: "PyPI::werkzeug:1.0.1"
+  purl: "pkg:pypi/werkzeug@1.0.1"
   declared_licenses:
   - "BSD License"
   - "BSD-3-Clause"
