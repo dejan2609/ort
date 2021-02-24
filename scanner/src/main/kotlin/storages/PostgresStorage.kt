@@ -193,6 +193,52 @@ class PostgresStorage(
         }
     }
 
+    override fun readInternal(
+        packages: List<Package>,
+        scannerCriteria: ScannerCriteria
+    ): Result<Map<Identifier, List<ScanResult>>> {
+        val minVersionArray = with(scannerCriteria.minVersion) { intArrayOf(major, minor, patch) }
+        val maxVersionArray = with(scannerCriteria.maxVersion) { intArrayOf(major, minor, patch) }
+
+        @Suppress("TooGenericExceptionCaught")
+        return try {
+            transaction {
+                val scanResults = ScanResultDao.find {
+                    (ScanResults.identifier inList packages.map { it.id.toCoordinates() }) and
+                            (rawParam("scan_result->'scanner'->>'name'") tilde scannerCriteria.regScannerName) and
+                            (rawParam(VERSION_EXPRESSION) greaterEq arrayParam(minVersionArray)) and
+                            (rawParam(VERSION_EXPRESSION) less arrayParam(maxVersionArray))
+                }.groupBy { it.identifier }
+                    .mapValues { (id, scanResultDaos) ->
+                        val pkg = packages.single { it.id == id }
+
+                        scanResultDaos.map { it.scanResult }
+                            // TODO: Currently the query only accounts for the scanner criteria. Ideally also the provenance
+                            //       should be checked in the query to reduce the downloaded data.
+                            .filter { it.provenance.matches(pkg) }
+                            // The scanner compatibility is already checked in the query, but filter here again to be on the
+                            // safe side.
+                            .filter { scannerCriteria.matches(it.scanner) }
+                    }
+
+                Success(scanResults)
+            }
+        } catch (e: Exception) {
+            when (e) {
+                is JsonProcessingException, is SQLException -> {
+                    e.showStackTrace()
+
+                    val message = "Could not read scan results with $scannerCriteria from database: " +
+                            e.collectMessagesAsString()
+
+                    log.info { message }
+                    Failure(message)
+                }
+                else -> throw e
+            }
+        }
+    }
+
     override fun addInternal(id: Identifier, scanResult: ScanResult): Result<Unit> {
         log.info { "Storing scan result for ${id.toCoordinates()} in storage." }
 

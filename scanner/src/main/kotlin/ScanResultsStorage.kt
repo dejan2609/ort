@@ -364,11 +364,11 @@ abstract class ScanResultsStorage {
      * override this function if they can filter for the wanted [scannerCriteria] or fetch results for multiple packages
      * in a more efficient way.
      */
-    fun readInternal(
+    protected open fun readInternal(
         packages: List<Package>,
         scannerCriteria: ScannerCriteria
     ): Result<Map<Identifier, List<ScanResult>>> {
-        // TODO: Consider to parallelize fetching the results for individual packages.
+        // TODO: Parallelize fetching the results for individual packages.
         val results = packages.map { readInternal(it, scannerCriteria) }
 
         return if (results.all { it is Failure }) {
