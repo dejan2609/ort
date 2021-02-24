@@ -67,6 +67,27 @@ class CompositeStorage(
     override fun readInternal(pkg: Package, scannerCriteria: ScannerCriteria): Result<ScanResultContainer> =
         fetchReadResult(pkg.id) { read(pkg, scannerCriteria) }
 
+    override fun readInternal(
+        packages: List<Package>,
+        scannerCriteria: ScannerCriteria
+    ): Result<Map<Identifier, List<ScanResult>>> {
+        if (readers.isEmpty()) return Success(emptyMap())
+
+        val remainingPackages = packages.toMutableList()
+        val result = mutableMapOf<Identifier, List<ScanResult>>()
+
+        readers.forEach { reader ->
+            val readerResult = reader.read(remainingPackages, scannerCriteria)
+            if (readerResult is Success) {
+                remainingPackages.filter { it.id !in readerResult.result.keys }
+                result += readerResult.result
+            }
+            // TODO: Handle Failure
+        }
+
+        return Success(result)
+    }
+
     /**
      * Trigger all configured writer storages to add the [scanResult] for the given [id]. Return a success result
      * if all of the writers are successful; otherwise return a failure result with an accumulated error message.
