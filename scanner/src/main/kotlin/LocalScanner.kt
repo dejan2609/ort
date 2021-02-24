@@ -204,34 +204,53 @@ abstract class LocalScanner(name: String, config: ScannerConfiguration) : Scanne
         outputDirectory: File,
         downloadDirectory: File
     ): Map<Package, List<ScanResult>> {
-        val storageDispatcher = Executors.newFixedThreadPool(
-            NUM_STORAGE_THREADS,
-            NamedThreadFactory(ScanResultsStorage.storage.name)
-        ).asCoroutineDispatcher()
+        val scannerCriteria = getScannerCriteria()
 
-        val scanDispatcher = Executors.newSingleThreadExecutor(NamedThreadFactory(scannerName)).asCoroutineDispatcher()
-
-        return try {
-            coroutineScope {
-                packages.withIndex().map { (index, pkg) ->
-                    val packageIndex = "(${index + 1} of ${packages.size})"
-
-                    async {
-                        pkg to scanPackage(
-                            pkg,
-                            packageIndex,
-                            downloadDirectory,
-                            outputDirectory,
-                            storageDispatcher,
-                            scanDispatcher
-                        )
-                    }
-                }.associate { it.await() }
-            }
-        } finally {
-            storageDispatcher.close()
-            scanDispatcher.close()
+        // TODO: Handle failures.
+        val resultsFromStorage = when (val results = ScanResultsStorage.storage.read(packages, scannerCriteria)) {
+            is Success -> results.result
+            is Failure -> emptyMap()
         }
+
+        // TODO: Decide how to handle empty result lists.
+        val remainingPackages = packages.filter { it.id !in resultsFromStorage.keys }
+
+        var index = 0
+        val resultsFromScanner = remainingPackages.associateWith { pkg ->
+            index++
+            listOf(scanPackage(details, pkg, outputDirectory, downloadDirectory))
+        }
+
+        return resultsFromStorage.mapKeys { (id) -> packages.single { it.id == id } } + resultsFromScanner
+
+//        val storageDispatcher = Executors.newFixedThreadPool(
+//            NUM_STORAGE_THREADS,
+//            NamedThreadFactory(ScanResultsStorage.storage.name)
+//        ).asCoroutineDispatcher()
+//
+//        val scanDispatcher = Executors.newSingleThreadExecutor(NamedThreadFactory(scannerName)).asCoroutineDispatcher()
+//
+//        return try {
+//            coroutineScope {
+//                packages.withIndex().map { (index, pkg) ->
+//                    val packageIndex = "(${index + 1} of ${packages.size})"
+//
+//                    async {
+//                        pkg to scanPackage(
+//                            pkg,
+//                            packageIndex,
+//                            downloadDirectory,
+//                            outputDirectory,
+//                            storageDispatcher,
+//                            scanDispatcher
+//                        )
+//                    }
+//                }.associate { it.await() }
+//            }
+//        } finally {
+//            storageDispatcher.close()
+//            scanDispatcher.close()
+//        }
     }
 
     /**
