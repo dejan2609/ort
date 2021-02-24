@@ -32,6 +32,7 @@ import org.ossreviewtoolkit.model.Package
 import org.ossreviewtoolkit.model.PackageLinkage
 import org.ossreviewtoolkit.model.Project
 import org.ossreviewtoolkit.model.Provenance
+import org.ossreviewtoolkit.model.RemoteArtifact
 import org.ossreviewtoolkit.model.Repository
 import org.ossreviewtoolkit.model.ScanRecord
 import org.ossreviewtoolkit.model.ScanResult
@@ -186,7 +187,7 @@ val ortResult = OrtResult(
                     id = Identifier("Maven:org.ossreviewtoolkit:package-with-only-detected-license:1.0"),
                     results = listOf(
                         ScanResult(
-                            provenance = Provenance(),
+                            provenance = Provenance.Artifact(RemoteArtifact.EMPTY),
                             scanner = ScannerDetails.EMPTY,
                             summary = ScanSummary(
                                 startTime = Instant.EPOCH,

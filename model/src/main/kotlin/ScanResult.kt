@@ -60,11 +60,6 @@ data class ScanResult(
 
         fun TextLocation.matchesPath() = this.path.startsWith("$path/") || this.path in applicableLicenseFiles
 
-        val newProvenance = provenance.copy(
-            vcsInfo = provenance.vcsInfo?.copy(path = path),
-            originalVcsInfo = provenance.originalVcsInfo?.copy(path = path)
-        )
-
         val licenseFindings = summary.licenseFindings.filter { it.location.matchesPath() }.toSortedSet()
         val copyrightFindings = summary.copyrightFindings.filter { it.location.matchesPath() }.toSortedSet()
         val fileCount = mutableSetOf<String>().also { set ->
@@ -78,14 +73,27 @@ data class ScanResult(
             copyrightFindings = copyrightFindings
         )
 
-        return ScanResult(newProvenance, scanner, summary)
+        return if (provenance is Provenance.Repository) {
+            val vcsProvenance = provenance.copy(
+                vcsInfo = provenance.vcsInfo.copy(path = path),
+                originalVcsInfo = provenance.originalVcsInfo.copy(path = path)
+            )
+
+            ScanResult(vcsProvenance, scanner, summary)
+        } else {
+            ScanResult(provenance, scanner, summary)
+        }
     }
 
     /**
      * Return a [ScanResult] whose [summary] contains only findings from the [provenance]'s [VcsInfo.path].
      */
     fun filterByVcsPath(): ScanResult =
-        filterByPath(provenance.vcsInfo?.takeUnless { it.type == VcsType.GIT_REPO }?.path.orEmpty())
+        if (provenance is Provenance.Repository && provenance.vcsInfo.type != VcsType.GIT_REPO) {
+            filterByPath(provenance.vcsInfo.path)
+        } else {
+            this
+        }
 
     /**
      * Return a [ScanResult] whose [summary] contains only findings whose location / path is not matched by any glob

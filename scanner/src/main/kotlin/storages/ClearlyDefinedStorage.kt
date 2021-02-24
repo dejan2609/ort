@@ -207,7 +207,7 @@ class ClearlyDefinedStorage(
             jsonMapper.readTree(it.byteStream())["content"]?.let { result ->
                 val summary = generateSummary(startTime, Instant.now(), "", result)
                 val details = generateScannerDetails(result)
-                Success(ScanResultContainer(id, listOf(ScanResult(Provenance(), details, summary))))
+                Success(ScanResultContainer(id, listOf(ScanResult(Provenance.Artifact(RemoteArtifact.EMPTY), details, summary))))
             } ?: emptyResult(id)
         }
     }

@@ -70,11 +70,11 @@ data class PackageConfiguration(
     fun matches(id: Identifier, provenance: Provenance): Boolean =
         when {
             id != this.id -> false
-            vcs != null -> when (provenance.vcsInfo) {
-                null -> false
-                else -> vcs.matches(provenance.vcsInfo)
+            vcs != null -> when (provenance) {
+                is Provenance.Artifact -> false
+                is Provenance.Repository -> vcs.matches(provenance.vcsInfo)
             }
-            else -> sourceArtifactUrl == provenance.sourceArtifact?.url
+            else -> sourceArtifactUrl == (provenance as? Provenance.Artifact)?.sourceArtifact?.url
         }
 }
 

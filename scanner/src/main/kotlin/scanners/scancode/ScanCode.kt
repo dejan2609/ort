@@ -34,6 +34,7 @@ import okio.buffer
 import okio.sink
 
 import org.ossreviewtoolkit.model.Provenance
+import org.ossreviewtoolkit.model.RemoteArtifact
 import org.ossreviewtoolkit.model.ScanResult
 import org.ossreviewtoolkit.model.ScannerDetails
 import org.ossreviewtoolkit.model.config.ScannerConfiguration
@@ -211,7 +212,7 @@ class ScanCode(
 
         with(process) {
             if (isSuccess || hasOnlyMemoryErrors || hasOnlyTimeoutErrors) {
-                return ScanResult(Provenance(), details, summary.copy(issues = issues))
+                return ScanResult(Provenance.Artifact(RemoteArtifact.EMPTY), details, summary.copy(issues = issues))
             } else {
                 throw ScanException(errorMessage)
             }

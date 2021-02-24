@@ -48,7 +48,7 @@ data class ScanResultContainer(
         val parentPath = File(project.definitionFilePath).parent ?: return this
 
         val filteredResults = results.map { result ->
-            if (result.provenance.vcsInfo == null) {
+            if (result.provenance is Provenance.Artifact) {
                 result
             } else {
                 result.filterByPath(parentPath)

@@ -209,7 +209,7 @@ class LicenseInfoResolver(
 
             if (!archiver.unarchive(archiveDir, provenance)) return@forEach
 
-            val directory = provenance.vcsInfo?.path.orEmpty()
+            val directory = (provenance as? Provenance.Repository)?.vcsInfo?.path.orEmpty()
             val rootLicenseFiles = rootLicenseMatcher.getApplicableLicenseFilesForDirectories(
                 relativeFilePaths = archiveDir.walk().filter { it.isFile }.mapTo(mutableSetOf()) {
                     it.toRelativeString(archiveDir)

@@ -33,6 +33,7 @@ import okhttp3.Request
 import org.ossreviewtoolkit.model.EMPTY_JSON_NODE
 import org.ossreviewtoolkit.model.LicenseFinding
 import org.ossreviewtoolkit.model.Provenance
+import org.ossreviewtoolkit.model.RemoteArtifact
 import org.ossreviewtoolkit.model.ScanResult
 import org.ossreviewtoolkit.model.ScanSummary
 import org.ossreviewtoolkit.model.TextLocation
@@ -121,7 +122,7 @@ class Askalono(name: String, config: ScannerConfiguration) : LocalScanner(name, 
                 stdoutFile.copyTo(resultsFile)
                 val result = getRawResult(resultsFile)
                 val summary = generateSummary(startTime, endTime, path, result)
-                return ScanResult(Provenance(), details, summary)
+                return ScanResult(Provenance.Artifact(RemoteArtifact.EMPTY), details, summary)
             } else {
                 throw ScanException(errorMessage)
             }

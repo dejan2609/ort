@@ -147,10 +147,9 @@ private val SHA1_DIGEST by lazy { MessageDigest.getInstance("SHA-1") }
  * Calculate the SHA-1 hash of the storage key of this [Provenance] instance.
  */
 private fun Provenance.hash(): String {
-    val key = vcsInfo?.let {
-        "${it.type}${it.url}${it.resolvedRevision}"
-    } ?: sourceArtifact!!.let {
-        "${it.url}${it.hash.value}"
+    val key = when (this) {
+        is Provenance.Artifact -> "${sourceArtifact.url}${sourceArtifact.hash.value}"
+        is Provenance.Repository -> "${vcsInfo.type}${vcsInfo.url}${vcsInfo.resolvedRevision}"
     }
 
     return SHA1_DIGEST.digest(key.toByteArray()).toHexString()

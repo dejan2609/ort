@@ -317,7 +317,7 @@ abstract class LocalScanner(name: String, config: ScannerConfiguration) : Scanne
             val now = Instant.now()
             listOf(
                 ScanResult(
-                    provenance = Provenance(),
+                    provenance = Provenance.Artifact(RemoteArtifact.EMPTY),
                     scanner = details,
                     summary = ScanSummary(
                         startTime = now,
@@ -375,7 +375,7 @@ abstract class LocalScanner(name: String, config: ScannerConfiguration) : Scanne
 
             val now = Instant.now()
             return ScanResult(
-                Provenance(),
+                Provenance.Artifact(RemoteArtifact.EMPTY),
                 scannerDetails,
                 ScanSummary(
                     startTime = now,

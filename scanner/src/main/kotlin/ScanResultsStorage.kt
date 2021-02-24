@@ -274,16 +274,6 @@ abstract class ScanResultsStorage {
             return Failure(message)
         }
 
-        // Do not store scan results without provenance information, because they cannot be assigned to the revision of
-        // the package source code later.
-        if (scanResult.provenance.sourceArtifact == null && scanResult.provenance.vcsInfo == null) {
-            val message =
-                "Not storing scan result for '${id.toCoordinates()}' because no provenance information is available."
-            log.info { message }
-
-            return Failure(message)
-        }
-
         val (result, duration) = measureTimedValue { addToStorage(id, scanResult) }
 
         log.perf {
