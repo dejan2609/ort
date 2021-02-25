@@ -30,7 +30,7 @@ class FileMatcher(
      *
      * [1]: https://docs.oracle.com/javase/tutorial/essential/io/fileOps.html#glob
      */
-    val patterns: List<String>,
+    val patterns: Collection<String>,
 
     /**
      * Toggle the case-sensitivity of the matching.

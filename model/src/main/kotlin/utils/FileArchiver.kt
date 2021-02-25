@@ -48,7 +48,7 @@ class FileArchiver(
      * A list of globs to match the paths of files that shall be archived. For details about the glob pattern see
      * [java.nio.file.FileSystem.getPathMatcher].
      */
-    patterns: List<String>,
+    patterns: Collection<String>,
 
     /**
      * The [FileStorage] to use for archiving files.
